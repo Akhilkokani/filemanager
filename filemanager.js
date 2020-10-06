@@ -5,6 +5,14 @@
  */
 
 
-(function () {
-    
-}) ();
+
+class FileManager {
+
+    constructor() {
+
+    }
+
+    asdasd(params) {
+        return "";
+    }
+};
