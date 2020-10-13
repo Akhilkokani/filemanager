@@ -91,9 +91,13 @@
     border-color: #006dd7;
 }
 
-.filemanager .items-grid .item img,
-.filemanager .items-grid .item video {
+.filemanager .items-grid .item .image-item,
+.filemanager .items-grid .item .video-item {
     cursor: pointer;
+    object-fit: cover;
+    -o-object-fit: cover;
+    width: 100%;
+    max-height: 300px;
 }
 
 .filemanager input[name="selected-content"] {

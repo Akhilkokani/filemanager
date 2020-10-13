@@ -18,7 +18,7 @@
     <script src="./filemanager.js"></script>
 </head>
 <body>
-    <input type="file" id="file" name="test-file" style="position: absolute; top: -100px;">
+    <!-- <input type="file" id="file" name="test-file" style="position: absolute; top: -100px;"> -->
     <button id="btn" class="btn btn-info btn-lg" data-toggle="modal" data-target="#filemanager">Select a file</button>
 
     <div id="filemanager" class="filemanager modal fade" role="dialog">
@@ -45,8 +45,8 @@
                                             Videos
                                         </p>
                                     </li>
-                                    <li class="upload-action" data-tab-for="videos">
-                                        <a role="button" onclick="$('#file').click();" class="rounded-btn rounded-btn-primary">
+                                    <li class="upload-action">
+                                        <a data-upload-action role="button" class="rounded-btn rounded-btn-primary">
                                             <span class="icon glyphicon glyphicon-cloud-upload"></span>
                                             Upload
                                         </a>
@@ -56,61 +56,61 @@
                             <div class="col-sm-9">
                                 <div class="tab-content">
                                     <div id="images_tab_content" class="tab-pane fade in active">
-                                        <div class="items-grid">
+                                        <div data-contain="images" class="items-grid">
                                             <div class="item">
                                                 <div class="thumbnail">
-                                                    <img src="https://www.w3schools.com/css/rock600x400.jpg" style="object-fit: cover; width: 100%; max-height: 300px;">
+                                                    <img class="image-item" src="https://www.w3schools.com/css/rock600x400.jpg" >
                                                     <input type="radio" name="selected-content" value="01">
                                                 </div>
                                             </div>
                                             <div class="item">
                                                 <div class="thumbnail">
-                                                    <img src="https://www.w3schools.com/css/rock600x400.jpg" style="object-fit: cover; width: 100%; max-height: 300px;">
+                                                    <img class="image-item"src="https://www.w3schools.com/css/rock600x400.jpg" >
                                                     <input type="radio" name="selected-content" value="02">
                                                 </div>
                                             </div>
                                             <div class="item">
                                                 <div class="thumbnail">
-                                                    <img src="https://cdn.pixabay.com/photo/2017/08/07/00/10/riveting-2597838_1280.jpg" style="object-fit: cover; width: 100%; max-height: 300px;">
+                                                    <img class="image-item"src="https://cdn.pixabay.com/photo/2017/08/07/00/10/riveting-2597838_1280.jpg" >
                                                     <input type="radio" name="selected-content" value="03">
                                                 </div>
                                             </div>
                                             <div class="item">
                                                 <div class="thumbnail selected">
-                                                    <img src="https://cdn.pixabay.com/photo/2019/12/21/21/15/man-4711375_960_720.jpg" style="object-fit: cover; width: 100%; max-height: 300px;">
+                                                    <img class="image-item"src="https://cdn.pixabay.com/photo/2019/12/21/21/15/man-4711375_960_720.jpg" >
                                                     <input type="radio" name="selected-content" value="04">
                                                 </div>
                                             </div>
                                             <div class="item">
                                                 <div class="thumbnail">
-                                                    <img src="https://www.w3schools.com/css/rock600x400.jpg" style="object-fit: cover; width: 100%; max-height: 300px;">
+                                                    <img class="image-item"src="https://www.w3schools.com/css/rock600x400.jpg" >
                                                     <input type="radio" name="selected-content" value="05">
                                                 </div>
                                             </div>
                                             <div class="item">
                                                 <div class="thumbnail">
-                                                    <img src="https://www.w3schools.com/css/rock600x400.jpg" style="object-fit: cover; width: 100%; max-height: 300px;">
+                                                    <img class="image-item"src="https://www.w3schools.com/css/rock600x400.jpg" >
                                                 </div>
                                             </div>
                                             <div class="item">
                                                 <div class="thumbnail">
-                                                    <img src="https://www.w3schools.com/css/rock600x400.jpg" style="object-fit: cover; width: 100%; max-height: 300px;">
+                                                    <img class="image-item"src="https://www.w3schools.com/css/rock600x400.jpg" >
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div id="videos_tab_content" class="tab-pane fade">
-                                        <!-- <div class="no-content text-center">
+                                        <!-- <div class="no-content">
                                             <h3>No content here.</h3>
                                             <p class="text-muted">You have not added any videos. Try uploading one.</p>
                                         </div> -->
-                                        <div class="items-grid videos-grid">
+                                        <div data-contain="videos" class="items-grid videos-grid">
                                             <div class="item">
                                                 <div class="thumbnail">
                                                     <video 
                                                         controls
                                                         src="https://www.w3schools.com/html/mov_bbb.mp4" 
-                                                        style="object-fit: cover; width: 100%; max-height: 300px;">
+                                                        class="video-item">
                                                     </video>
                                                     <input type="radio" name="selected-content" value="v1">
                                                 </div>
@@ -119,7 +119,7 @@
                                                 <div class="thumbnail">
                                                     <video 
                                                         src="https://www.w3schools.com/html/mov_bbb.mp4" 
-                                                        style="object-fit: cover; width: 100%; max-height: 300px;">
+                                                        class="video-item">
                                                     </video>
                                                     <input type="radio" name="selected-content" value="v2">
                                                 </div>
@@ -128,7 +128,7 @@
                                                 <div class="thumbnail">
                                                     <video 
                                                         src="https://www.w3schools.com/html/mov_bbb.mp4" 
-                                                        style="object-fit: cover; width: 100%; max-height: 300px;">
+                                                        class="video-item">
                                                     </video>
                                                     <input type="radio" name="selected-content" value="v3">
                                                 </div>
@@ -149,10 +149,68 @@
                         let value = $this.find("input[name='selected-content']").val() || null;
                         console.log("You selected: " + value);
                     });
+
+                    let fm = new Filemanager( $("#filemanager") );
+                    let display = {
+                        'tabs': {
+                            'images': true,
+                            'videos': false,
+                        },
+                        'actions': {
+                            'upload': true,
+                        }, 
+                    };
+
+                    let data = {
+                        'images': {
+                            0: {
+                                src: "https://www.w3schools.com/css/rock600x400.jpg",
+                                value: "i1" 
+                            },
+                            1: {
+                                src: "https://www.w3schools.com/css/rock600x400.jpg",
+                                value: "i2" 
+                            },
+                            2: {
+                                src: "https://www.w3schools.com/css/rock600x400.jpg",
+                                value: "i3" 
+                            },
+                            3: {
+                                src: "https://www.w3schools.com/css/rock600x400.jpg",
+                                value: "i4" 
+                            },
+                        },
+                        'videos': {
+                            0: {
+                                src: "https://www.w3schools.com/html/mov_bbb.mp4",
+                                value: "v1", 
+                            },
+                            1: {
+                                src: "https://www.w3schools.com/html/mov_bbb.mp4",
+                                value: "v2", 
+                            },
+                            2: {
+                                src: "https://www.w3schools.com/html/mov_bbb.mp4",
+                                value: "v3",
+                            },
+                            3: {
+                                src: "https://www.w3schools.com/html/mov_bbb.mp4",
+                                value: "v4", 
+                            },
+                        },
+                    };
+                    $("#btn").on("click", () => {
+                        fm.init(display, data, {
+                            "on_complete": (res) => {
+                                console.log( res );
+                            }
+                        });
+                    });
+                    // console.log( "result ", result );
                 </script>
                 
                 <div class="modal-footer">
-                    <button type="button" class="btn rounded-btn rounded-btn-primary">Done</button>
+                    <button type="button" data-done-btn class="btn rounded-btn rounded-btn-primary">Done</button>
                 </div>
             </div>
         </div>
