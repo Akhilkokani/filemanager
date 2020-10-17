@@ -27,17 +27,18 @@ class Filemanager {
 
         // element selectors which are required at various stages
         this.selectors = {
-            "upload_action": "a[data-upload-action]",
-            "tabs": {
-                "images": {
-                    "tab": "li[data-tab-for='images']",
-                    "container": "div[data-contain='images']",
+            upload_action: "a[data-upload-action]",
+            tabs: {
+                images: {
+                    tab: "li[data-tab-for='images']",
+                    container: "div[data-contain='images']",
                 },
-                "videos": {
-                    "tab": "li[data-tab-for='videos']",
-                    "container": "div[data-contain='videos']",
+                videos: {
+                    tab: "li[data-tab-for='videos']",
+                    container: "div[data-contain='videos']",
                 },
             },
+            done_action: "button[data-done-btn]",
         };
 
         // radio input node
@@ -58,6 +59,7 @@ class Filemanager {
             let $video = $("<video>", {
                 src: src,
                 controls: "",
+                class: "video-item",
             });
 
             let $div_thumbnail = $("<div>", {
@@ -145,23 +147,24 @@ class Filemanager {
      * @param {JSON} data Data to display inside each tab.
      * @param {JSON} callbacks Functions to invoked
      *  dynamically.
-     * @return {void}
+     * @return void
      */
     init(display,
         data,
         callbacks = {
-            "on_complete": () => {}
+            on_complete: () => {}
         }) {
         /**
          * === Options expected under "display" param. ===
          * display = {
-         *      'tabs': {
-         *          'images': true/false,
-         *          'videos': true/false,
+         *      tabs: {
+         *          images: true/false,
+         *          videos: true/false,
          *      },
-         *      'actions': {
-         *          'upload': true/false,
+         *      actions: {
+         *          upload: true/false,
          *      },
+         *      active_tab_by_default: 'images',
          * };
          *
          * === Options expected under "data" param. ===
@@ -182,32 +185,49 @@ class Filemanager {
          *      }
          * };
          */
-        // value of "name" attr of file element which is invoked 
-        // when user clicks on upload button.
-        let filenode_name = "FM_file";
-        let _this = this; // pointer to base Filemanager
 
-        if (!display) {
-            console.warn("Not specified what all to display,",
+        // not specified what to display
+        if (Object.keys(display).length === 0) {
+            console.warn("FileManager: Not specified what all to display,",
                 "so going by default and displaying all tabs",
                 "and actions."
             );
 
-            // custom options not set so set default ones.
+            // custom options not set so set to default.
             display = {
-                'tabs': {
-                    'images': true,
-                    'videos': true,
+                tabs: {
+                    images: true,
+                    videos: true,
                 },
-                'actions': {
-                    'upload': true,
+                actions: {
+                    upload: true,
                 },
+                active_tab_by_default: "images",
             };
         }
+        
+        // value of "name" attr of file element which is invoked 
+        // when user clicks on upload button.
+        const filenode_name = "FM_file";
+        
+        // pointer to base Filemanager
+        const _this = this;
 
-        let _upload_action = display.actions.upload; // upload button
-        let to_upload_file = null; // file which needs to be uploaded
+        // upload button
+        let _upload_action = display.actions.upload;
+        
+        // file which needs to be uploaded
+        let to_upload_file = null;
 
+        // existing file value which is selected i.e., image or video
+        let selected_content = null;
+
+        // headers which will be sent as param during invoking callback
+        let response = {
+            upload_file: null, // to indicate whether user has selected custom file or not
+            uploadable_file: File, // user custom selected file which needs to uploaded
+            selected_file: null, // user selected file from existing files
+        };
 
         // prevent user from uploading files
         if (_upload_action === false) {
@@ -231,7 +251,7 @@ class Filemanager {
                     name: filenode_name,
                     style: "position: absolute; top: -100px;",
                 });
-                this.$fm_wrap.on("change", $file_ele, function () {
+                $file_ele.on("change", $file_ele, function () {
                     to_upload_file = $file_ele[0].files[0];
                 });
                 $(this.$fm_wrap).append($file_ele);
@@ -241,29 +261,33 @@ class Filemanager {
             });
         }
 
+        // display images tab
         if (display.tabs.images === true) {
-            /**
-             * display images tab, overwrite if hidden previously
-             * clean container, overwrite if contains anything previously
-             * render all images into tab content,
-             * if no images add no content block.
-             * activate images tab.
-             */
+
+            // pointer to images tab elements
             let _ = this.selectors.tabs.images;
 
+            /**
+             * Images tab was indicated as to display but no data was passed
+             * so add a default message.
+             */
             if (!data.images) {
                 $(_.container).html(this.no_content_msg(
-                    "No content here.",
-                    "You have not added any images yet, try uploading."
-                )
+                        "No content here.",
+                        "You have not added any images yet, try adding one."
+                    )
                 );
-            } else {
+            }
+            /** 
+             * Images data provided.
+             */ 
+            else {
                 $(_.container).html("");
-                $.each(data.images, function (index, img_data) {
+                $.each(data.images, function (index, data) {
                     $(_.container).append(
                         _this.image_item(
-                            img_data.src || "",
-                            img_data.value || ""
+                            data.src || "",
+                            data.value || ""
                         )
                     );
                 });
@@ -271,30 +295,120 @@ class Filemanager {
             $(_.tab).show();
             $(_.container).show();
         }
+        // do not display images tab and its container.
         else {
-            $(_this.selectors.tabs.images.tab).hide();
-            $(_this.selectors.tabs.images.container).hide();
+            $(this.selectors.tabs.images.tab).hide();
+            $(this.selectors.tabs.images.container).hide();
         }
 
-        // headers which will be returned
-        let response = {
-            "upload_file": null,
-            "uploadable_file": null,
-            "selected_file_value": null,
-        };
+        // display videos tab
+        if (display.tabs.videos === true) {
 
-        // user has selected a file to upload
-        if (to_upload_file) {
-            response.upload_file = true;
-            response.uploadable_file = to_upload_file;
+            // pointer to videos tab elements
+            let _ = this.selectors.tabs.videos;
+
+            /**
+             * Videos tab was indicated as to display but no data was passed
+             * so add a default message.
+             */
+            if (!data.videos) {
+                $(_.container).html(this.no_content_msg(
+                        "No content here.",
+                        "You have not added any videos yet, try adding one."
+                    )
+                );
+            }
+            /** 
+             * Videos data provided.
+             */ 
+            else {
+                $(_.container).html("");
+                $.each(data.videos, function (index, data) {
+                    $(_.container).append(
+                        _this.video_item(
+                            data.src || "",
+                            data.value || ""
+                        )
+                    );
+                });
+            }
+            $(_.tab).show();
+            $(_.container).show();
         }
+        // do not display images tab and its container.
         else {
-            // for selected file from existing ones
+            $(this.selectors.tabs.videos.tab).hide();
+            $(this.selectors.tabs.videos.container).hide();
         }
+
+        // determine which tab to display intially and activate it
+        if (
+            typeof display.active_tab_by_default === "string" 
+            && ( display.tabs.videos || display.tabs.images )
+        ) {
+
+            // convert to lowercase
+            let tab_to_activate = display.active_tab_by_default.toLowerCase();
+
+            // identify and activate appropriate tab
+            switch (tab_to_activate) {
+                case "images":
+                    $(this.selectors.tabs.images.tab).click();
+                    break;
+                
+                case "videos":
+                    $(this.selectors.tabs.videos.tab).click();
+                    break;
+
+                default:
+                    console.warn("FileManager: Tab to activate by default not",
+                        "mentioned so trying to activate images tab.");
+                    $(this.selectors.tabs.images.tab).click();
+                    break;
+            }
+        }
+
+        // add event listener to existing items only if existing
+        // images or videos data is passed
+        if (data.images || data.videos) {
+            // when image/video item is selected
+            this.$fm_wrap.on("click", ".thumbnail", (ele) => {
+                let $this = $(ele.currentTarget);
+                selected_content = $this.find("input[name='selected-content']").val() || null;
+                $(".thumbnail").removeClass("selected");
+                $this.addClass("selected");
+            });
+        }
+
+        // when done button is clicked
+        this.$fm_wrap.on("click", this.selectors.done_action, () => {
+            
+            // user has selected a file to upload
+            if (to_upload_file) {
+                response.upload_file = true;
+                response.uploadable_file = to_upload_file;
+            }
+            // user has selected existing file
+            else if (selected_content) {
+                response.upload_file = false;
+                response.uploadable_file = File;
+                response.selected_file = selected_content;
+            }
+            $("#filemanager").modal("hide");
+            callbacks.on_complete(response);
+        });
+
+        // when FM modal is about to be closed
+        $("#filemanager").on("hide.bs.modal", function() {
+            $(_this.$fm_wrap).off("click");
+            $(_this.$fm_wrap).off("hide.bs.modal");
+            $(_this.selectors.tabs.videos.container).html("");
+            $(_this.selectors.tabs.images.container).html("");
+        });
+
+        $("#filemanager").modal("show");
     }
 }
-
-
 
 
 
