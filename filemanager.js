@@ -222,11 +222,15 @@ class Filemanager {
         // existing file value which is selected i.e., image or video
         let selected_content = null;
 
+        // if existing file is selected its source (URL) is stored
+        let selected_content_src = null;
+
         // headers which will be sent as param during invoking callback
         let response = {
             upload_file: null, // to indicate whether user has selected custom file or not
             uploadable_file: File, // user custom selected file which needs to uploaded
             selected_file: null, // user selected file from existing files
+            selected_content_src: null, // user selected file source (URL)
         };
 
         // prevent user from uploading files
@@ -375,6 +379,16 @@ class Filemanager {
             this.$fm_wrap.on("click", ".thumbnail", (ele) => {
                 let $this = $(ele.currentTarget);
                 selected_content = $this.find("input[name='selected-content']").val() || null;
+
+                // selected element is image
+                if ($this.find("img").length) {
+                    selected_content_src = $this.find("img").attr("src");
+                } 
+                // selected element is video
+                else if ($this.find("video").length) {
+                    selected_content_src = $this.find("video").attr("src");
+                }
+
                 $(".thumbnail").removeClass("selected");
                 $this.addClass("selected");
             });
@@ -393,6 +407,7 @@ class Filemanager {
                 response.upload_file = false;
                 response.uploadable_file = File;
                 response.selected_file = selected_content;
+                response.selected_content_src = selected_content_src;
             }
             $("#filemanager").modal("hide");
             callbacks.on_complete(response);
