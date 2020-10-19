@@ -257,6 +257,11 @@ class Filemanager {
                 });
                 $file_ele.on("change", $file_ele, function () {
                     to_upload_file = $file_ele[0].files[0];
+                    
+                    // click "Done" button dynamically if user selects a custom file to upload, 
+                    // so that it saves them certain time from manually clicking done btn 
+                    // everytime they select a file.
+                    $(this.selectors.done_action).click();
                 });
                 $(this.$fm_wrap).append($file_ele);
 
