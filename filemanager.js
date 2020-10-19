@@ -261,7 +261,7 @@ class Filemanager {
                     // click "Done" button dynamically if user selects a custom file to upload, 
                     // so that it saves them certain time from manually clicking done btn 
                     // everytime they select a file.
-                    $(this.selectors.done_action).click();
+                    $(_this.selectors.done_action).click();
                 });
                 $(this.$fm_wrap).append($file_ele);
 
